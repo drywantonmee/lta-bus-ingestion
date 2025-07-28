@@ -13,7 +13,6 @@ if not os.path.exists(dotenv_path):
 load_dotenv(dotenv_path=dotenv_path)
 
 # Initialize Spark session
-# Construct the absolute path for the JAR file relative to the script's location
 script_dir = os.path.dirname(os.path.abspath(__file__))
 jar_path = os.path.join(script_dir, '..', 'jars', 'postgresql-42.7.3.jar')
 spark = SparkSession.builder \
@@ -34,8 +33,8 @@ def fetch_all_bus_stops(api_key):
     while True:
         try:
             response = requests.get(f"{base_url}?$skip={skip}", headers=headers)
-            response.raise_for_status()  # Raises exception for 4xx/5xx errors
-            data = response.json().get("value", [])  # Safely get "value" or empty list
+            response.raise_for_status()
+            data = response.json().get("value", [])
             if not data:
                 break
             all_data.extend(data)
@@ -53,13 +52,13 @@ def fetch_all_bus_stops(api_key):
             raise
     return all_data
 
-# Get API key with error handling
+# Get API key
 api_key = os.environ.get("LTA_API_KEY")
 if not api_key:
     print("Error: LTA_API_KEY not set in .env file or environment")
     raise ValueError("LTA_API_KEY not set in .env file or environment. Please check /Users/jaydenlim/Desktop/DE project/Bus stop/lta-bus-data-pipeline/.env")
 
-# Fetch data (or use sample JSON for testing)
+# Fetch data
 try:
     bus_stops_data = fetch_all_bus_stops(api_key)
 except Exception as e:
